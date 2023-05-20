@@ -11,7 +11,7 @@ jobs:
   check:
     name: ${{ fromJSON(inputs.client_payload).checkJobName }}
     runs-on: [ubuntu-latest]
-    if: fromJSON(inputs.client_payload).version == '0.0.0'
+    if: startsWith(fromJSON(inputs.client_payload).version, '0.')
     concurrency:
       group: ${{ fromJSON(inputs.client_payload).concurrencyGroup || github.run_id }}
       cancel-in-progress: true
