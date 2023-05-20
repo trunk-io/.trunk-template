@@ -1,0 +1,34 @@
+name: Trunk Check
+on:
+  workflow_dispatch:
+    inputs:
+      client_payload:
+        required: true
+
+permissions: {}
+
+jobs:
+  check:
+    name: ${{ fromJSON(inputs.client_payload).checkJobName }}
+    runs-on: [ubuntu-latest]
+    if: fromJSON(inputs.client_payload).version == '0.0.0'
+    concurrency:
+      group: ${{ fromJSON(inputs.client_payload).concurrencyGroup || github.run_id }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Apply token masks
+        shell: bash
+        run: |
+          echo "::add-mask::$(jq '.inputs.client_payload | fromjson | .githubToken' $GITHUB_EVENT_PATH)"
+          echo "::add-mask::$(jq '.inputs.client_payload | fromjson | .token'       $GITHUB_EVENT_PATH)"
+
+      - name: Log input
+        shell: bash
+        run: |
+          jq '.inputs.client_payload | fromjson' $GITHUB_EVENT_PATH
+
+      - name: Trunk Check
+        uses: trunk-io/trunk-action@main
+        with:
+          json: ${{ inputs.client_payload }}
