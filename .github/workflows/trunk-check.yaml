@@ -3,14 +3,21 @@ on:
   workflow_dispatch:
     inputs:
       client_payload:
+        description: Deprecated
+      clientPayload:
+        description: Passed through to trunk-io/trunk-action@v1
         required: true
+      githubToken:
+        description: Experimental
+      trunkToken:
+        description: Experimental
 
 permissions: {}
 
 jobs:
   check:
     name: ${{ fromJSON(inputs.client_payload).checkJobName }}
-    runs-on: ${{ fromJSON(inputs.client_payload).runsOn }}
+    runs-on: ${{ fromJSON(inputs.client_payload).checkJobRunsOn }}
     concurrency:
       group: ${{ fromJSON(inputs.client_payload).concurrencyGroup }}
       cancel-in-progress: true
@@ -19,10 +26,10 @@ jobs:
       - name: Apply token masks
         shell: bash
         run: |
-          echo "::add-mask::$(jq '.inputs.client_payload | fromjson | .githubToken' $GITHUB_EVENT_PATH)"
-          echo "::add-mask::$(jq '.inputs.client_payload | fromjson | .token'       $GITHUB_EVENT_PATH)"
+          echo "::add-mask::$(jq '.inputs.clientPayload | fromjson | .githubToken' $GITHUB_EVENT_PATH)"
+          echo "::add-mask::$(jq '.inputs.clientPayload | fromjson | .token'       $GITHUB_EVENT_PATH)"
 
       - name: Trunk Check
         uses: trunk-io/trunk-action@v1
         with:
-          json: ${{ inputs.client_payload }}
+          json: ${{ inputs.clientPayload }}
