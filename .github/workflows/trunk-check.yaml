@@ -11,9 +11,8 @@ jobs:
   check:
     name: ${{ fromJSON(inputs.client_payload).checkJobName }}
     runs-on: [ubuntu-latest]
-    if: startsWith(fromJSON(inputs.client_payload).version, '0.')
     concurrency:
-      group: ${{ fromJSON(inputs.client_payload).concurrencyGroup || github.run_id }}
+      group: ${{ fromJSON(inputs.client_payload).concurrencyGroup }}
       cancel-in-progress: true
 
     steps:
@@ -22,11 +21,6 @@ jobs:
         run: |
           echo "::add-mask::$(jq '.inputs.client_payload | fromjson | .githubToken' $GITHUB_EVENT_PATH)"
           echo "::add-mask::$(jq '.inputs.client_payload | fromjson | .token'       $GITHUB_EVENT_PATH)"
-
-      - name: Log input
-        shell: bash
-        run: |
-          jq '.inputs.client_payload | fromjson' $GITHUB_EVENT_PATH
 
       - name: Trunk Check
         uses: trunk-io/trunk-action@v1
