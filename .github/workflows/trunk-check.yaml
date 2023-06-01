@@ -10,7 +10,7 @@ permissions: {}
 jobs:
   check:
     name: ${{ fromJSON(inputs.client_payload).checkJobName }}
-    runs-on: [ubuntu-latest]
+    runs-on: ${{ fromJSON(inputs.client_payload).runsOn }}
     concurrency:
       group: ${{ fromJSON(inputs.client_payload).concurrencyGroup }}
       cancel-in-progress: true
