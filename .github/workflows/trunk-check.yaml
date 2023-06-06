@@ -8,28 +8,22 @@ on:
         description: Passed through to trunk-io/trunk-action@v1
         required: true
       githubToken:
-        description: Experimental
+        description: Deprecated
       trunkToken:
-        description: Experimental
+        description: Deprecated
 
 permissions: {}
 
 jobs:
   check:
-    name: ${{ fromJSON(inputs.client_payload).checkJobName }}
-    runs-on: ${{ fromJSON(inputs.client_payload).checkJobRunsOn }}
+    name: ${{ fromJSON(inputs.clientPayload).checkJobName }}
+    runs-on: ${{ fromJSON(inputs.clientPayload).checkJobRunsOn }}
     concurrency:
-      group: ${{ fromJSON(inputs.client_payload).concurrencyGroup }}
+      group: ${{ fromJSON(inputs.clientPayload).concurrencyGroup }}
       cancel-in-progress: true
 
     steps:
-      - name: Apply token masks
-        shell: bash
-        run: |
-          echo "::add-mask::$(jq '.inputs.clientPayload | fromjson | .githubToken' $GITHUB_EVENT_PATH)"
-          echo "::add-mask::$(jq '.inputs.clientPayload | fromjson | .token'       $GITHUB_EVENT_PATH)"
-
       - name: Trunk Check
         uses: trunk-io/trunk-action@v1
         with:
-          json: ${{ inputs.clientPayload }}
+          github-event-path: ${{ github.event_path }}
