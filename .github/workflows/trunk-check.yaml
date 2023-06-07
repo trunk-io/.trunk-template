@@ -5,8 +5,9 @@ on:
       client_payload:
         description: Deprecated
       clientPayload:
+        description: Deprecated
+      payload:
         description: Passed through to trunk-io/trunk-action@v1
-        required: true
       githubToken:
         description: Deprecated
       trunkToken:
