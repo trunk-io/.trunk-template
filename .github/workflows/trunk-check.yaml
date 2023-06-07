@@ -1,30 +1,32 @@
 name: Trunk Check
+run-name: ${{ fromJSON(inputs.payload || inputs.clientPayload).checkJobRunName }}
 on:
   workflow_dispatch:
     inputs:
-      client_payload:
-        description: Deprecated
-      clientPayload:
-        description: Deprecated
       payload:
-        description: Passed through to trunk-io/trunk-action@v1
+        required: false
+      clientPayload:
+        required: false
+      client_payload:
+        required: false
       githubToken:
-        description: Deprecated
+        required: false
       trunkToken:
-        description: Deprecated
+        required: false
 
 permissions: {}
 
 jobs:
   check:
-    name: ${{ fromJSON(inputs.clientPayload).checkJobName }}
-    runs-on: ${{ fromJSON(inputs.clientPayload).checkJobRunsOn }}
+    name: ${{ fromJSON(inputs.payload || inputs.clientPayload).checkJobName }}
+    runs-on: ${{ fromJSON(inputs.payload || inputs.clientPayload).checkJobRunsOn }}
+    if: startsWith(fromJSON(inputs.payload || inputs.clientPayload).version, '0.')
     concurrency:
-      group: ${{ fromJSON(inputs.clientPayload).concurrencyGroup }}
+      group: ${{ fromJSON(inputs.payload || inputs.clientPayload).concurrencyGroup || github.run_id }}
       cancel-in-progress: true
 
     steps:
       - name: Trunk Check
-        uses: trunk-io/trunk-action@v1
+        uses: trunk-io/trunk-action@main
         with:
-          github-event-path: ${{ github.event_path }}
+          check-mode: payload
