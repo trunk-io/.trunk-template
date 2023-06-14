@@ -1,5 +1,5 @@
 name: Trunk Check
-run-name: ${{ fromJSON(inputs.payload).checkJobRunName }}
+run-name: ${{ fromJSON(inputs.payload).checkWorkflowRunName }}
 on:
   workflow_dispatch:
     inputs:
