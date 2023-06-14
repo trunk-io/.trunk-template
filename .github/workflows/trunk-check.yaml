@@ -1,28 +1,21 @@
 name: Trunk Check
-run-name: ${{ fromJSON(inputs.payload || inputs.clientPayload).checkJobRunName }}
+run-name: ${{ fromJSON(inputs.payload).checkJobRunName }}
 on:
   workflow_dispatch:
     inputs:
       payload:
-        required: false
-      clientPayload:
-        required: false
-      client_payload:
-        required: false
-      githubToken:
-        required: false
-      trunkToken:
+        description: For invocation by Trunk Check
         required: false
 
-permissions: {}
+permissions:
+  contents: read
 
 jobs:
   check:
-    name: ${{ fromJSON(inputs.payload || inputs.clientPayload).checkJobName }}
-    runs-on: ${{ fromJSON(inputs.payload || inputs.clientPayload).checkJobRunsOn }}
-    if: startsWith(fromJSON(inputs.payload || inputs.clientPayload).version, '0.')
+    name: ${{ fromJSON(inputs.payload).checkJobName }}
+    runs-on: ${{ fromJSON(inputs.payload).checkJobRunsOn }}
     concurrency:
-      group: ${{ fromJSON(inputs.payload || inputs.clientPayload).concurrencyGroup || github.run_id }}
+      group: ${{ fromJSON(inputs.payload).concurrencyGroup }}
       cancel-in-progress: true
 
     steps:
