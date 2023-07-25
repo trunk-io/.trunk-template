@@ -12,10 +12,15 @@ permissions:
 
 jobs:
   check:
-    name: ${{ fromJSON(inputs.payload).checkJobName }}
-    runs-on: ${{ fromJSON(inputs.payload).checkJobRunsOn }}
+    strategy:
+      fail-fast: ${{ fromJSON(inputs.payload).checkJobMatrixFailFast }}
+      matrix:
+        include: ${{ fromJSON(inputs.payload).checkJobMatrix }}
+
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.runsOn }}
     concurrency:
-      group: ${{ fromJSON(inputs.payload).concurrencyGroup }}
+      group: ${{ matrix.concurrencyGroup }}
       cancel-in-progress: true
 
     steps:
